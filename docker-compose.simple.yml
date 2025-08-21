@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Simple FinGuard API Service
+  finguard-api:
+    build: 
+      context: .
+      dockerfile: deployment/docker/Dockerfile.simple
+    container_name: finguard-api-simple
+    ports:
+      - "8000:8000"
+    environment:
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - finguard-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  finguard-network:
+    driver: bridge
